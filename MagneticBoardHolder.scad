@@ -1,6 +1,6 @@
 /* [Style] */
 // Style
-Style = "1"; // [1:Single, 2:Support, 3:Double]
+Style = "3"; // [1:Single, 2:Support, 3:Double]
 
 /* [Common Dimensions] */
 // Magnet Diameter (mm)
@@ -37,6 +37,12 @@ TopFeatureConeBase = 5;
 SupportConeHeight = 4;
 // Diameter of the support cone point
 SupportConeTopD = 2;
+
+/* [Corner Holder] */
+// Distance between post centres
+Span = 30;
+// Height of the span
+SpanHeight = 6;
 
 // ###########################################
 
@@ -111,6 +117,28 @@ module Support()
    }
 }
 
+module Double()
+{
+   difference()
+   {
+      union()
+      {
+         translate([-OD/2, 0, 0])
+            cube([OD, Span, SpanHeight]);
+         Holder();
+         translate([0, Span, 0])
+            Holder();
+      }
+      
+      // Is there a better way to cut these magnets out rather than repeating the process? Yes!
+      // Can I be bothered? No!
+      translate([0,0,-RenderCludge])
+         cylinder(d = MagnetDiameter + MagnetSlop, h = MagnetHeight); // Mag cutout
+      translate([0, Span, -RenderCludge])
+         cylinder(d = MagnetDiameter + MagnetSlop, h = MagnetHeight); // Mag cutout
+   }
+}
+
 if( Style == "1" )
 {
    Holder();
@@ -121,6 +149,5 @@ else if( Style == "2" )
 }
 else if( Style == "3" )
 {
-   // Todo
-   Holder();
+   Double();
 }
