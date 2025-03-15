@@ -10,7 +10,7 @@ MagnetHeight = 3;
 // Magnet Slop (mm)
 MagnetSlop = 0.1;
 // Holder height
-BoardZ = 15;
+BoardZ = 20;
 // WallTh
 WallTh = 1;
 
@@ -42,7 +42,9 @@ SupportConeTopD = 2;
 // Distance between post centres
 Span = 30;
 // Height of the span
-SpanHeight = 6;
+SpanHeight = 10;
+// Cable clamp D
+CableD = 6;
 
 // ###########################################
 
@@ -121,21 +123,28 @@ module Double()
 {
    difference()
    {
-      union()
+      difference()
       {
-         translate([-OD/2, 0, 0])
-            cube([OD, Span, SpanHeight]);
-         Holder();
-         translate([0, Span, 0])
+         union()
+         {
+            translate([-OD/2, 0, 0])
+               cube([OD, Span, SpanHeight]);
             Holder();
+            translate([0, Span, 0])
+               Holder();
+         }
+         
+         // Is there a better way to cut these magnets out rather than repeating the process? Yes!
+         // Can I be bothered? No!
+         translate([0,0,-RenderCludge])
+            cylinder(d = MagnetDiameter + MagnetSlop, h = MagnetHeight); // Mag cutout
+         translate([0, Span, -RenderCludge])
+            cylinder(d = MagnetDiameter + MagnetSlop, h = MagnetHeight); // Mag cutout
       }
       
-      // Is there a better way to cut these magnets out rather than repeating the process? Yes!
-      // Can I be bothered? No!
-      translate([0,0,-RenderCludge])
-         cylinder(d = MagnetDiameter + MagnetSlop, h = MagnetHeight); // Mag cutout
-      translate([0, Span, -RenderCludge])
-         cylinder(d = MagnetDiameter + MagnetSlop, h = MagnetHeight); // Mag cutout
+      translate([-OD/2 - RenderCludge,Span/2,0])
+         rotate([0,90,0])
+            cylinder(d = CableD * 2, h=OD + 2*RenderCludge);
    }
 }
 
